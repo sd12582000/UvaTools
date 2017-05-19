@@ -23,11 +23,11 @@ class UvaUser:
 
         try:
             self.submit = GeneralMethod.load_json_data(file_path)
-            print("load file")
+            #print("load file")
         except (FileNotFoundError, AttributeError):
             self.submit = uhunt_api.get_user_submit(self.uid)
             self.save_user_sumbit()
-            print("get from uhunt")
+            #print("get from uhunt")
         finally:
             self.init_user_statistics()
 
