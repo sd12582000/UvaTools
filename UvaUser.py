@@ -31,6 +31,15 @@ class UvaUser:
         finally:
             self.init_user_statistics()
 
+    def reload_user_sumbit(self):
+        """
+        Update user sumbit log from uhunt_api
+        """
+        from .lib import uhunt_api
+        self.submit = uhunt_api.get_user_submit(self.uid)
+        self.save_user_sumbit()
+        self.init_user_statistics()
+
     def init_user_statistics(self):
         """
         init User Sumbit Statistics by user_submit
