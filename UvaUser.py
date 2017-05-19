@@ -11,23 +11,23 @@ class UvaUser:
         from . import UvaProblems
         from .lib import uhunt_api
         from .lib import GeneralMethod
+        from os.path import join
 
         self.problem_set = UvaProblems()
         self.uid = uhunt_api.get_user_id(user_name)
         self.try_set = set()
         self.ac_set = set()
 
-        package = "{}.{}".format(__package__, "Users")
         file_name = "{}.json".format(self.uid)
-        #print(package)
+        file_path = join("Users", file_name)
 
         try:
-            self.submit = GeneralMethod.load_json_data(package, file_name)
-            #print("load file")
+            self.submit = GeneralMethod.load_json_data(file_path)
+            print("load file")
         except (FileNotFoundError, AttributeError):
             self.submit = uhunt_api.get_user_submit(self.uid)
             self.save_user_sumbit()
-            #print("get from uhunt")
+            print("get from uhunt")
         finally:
             self.init_user_statistics()
 
@@ -91,8 +91,10 @@ class UvaUser:
             None
         """
         from .lib import GeneralMethod
-        from os.path import abspath, join, dirname
-        file_path = join(join(abspath(dirname(__file__)), "Users"), "{}.json".format(self.uid))
+        import os
+        if not os.path.exists("Users"):
+            os.mkdir("Users")
+        file_path = os.path.join("Users", "{}.json".format(self.uid))
         GeneralMethod.save_json_data(self.submit, file_path)
 
     def is_acept(self, problem_num):

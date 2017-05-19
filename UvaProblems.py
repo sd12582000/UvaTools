@@ -16,7 +16,7 @@ class UvaProblems:
 
         try:
             from .lib import GeneralMethod
-            self.dic = GeneralMethod.load_json_data(__package__, fileName)
+            self.dic = GeneralMethod.load_json_data(fileName)
         except (FileNotFoundError, AttributeError):
             from .lib import uhunt_api
             self.dic = uhunt_api.get_problem_name_dic_from_uhunt()
@@ -47,7 +47,8 @@ class UvaProblems:
         """
         from .lib import GeneralMethod
         from os.path import abspath, join, dirname
-        file_path = join(abspath(dirname(__file__)), file_name)
+        file_path = file_name
+        #file_path = join(abspath(dirname(__file__)), file_name)
         GeneralMethod.save_json_data(self.dic, file_path)
 
     def problem_id_to_num(self, problem_id):
