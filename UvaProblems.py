@@ -84,3 +84,22 @@ class UvaProblems:
             return self.dic[problem_num]["pTitle"]
         else:
             return ""
+
+    def creat_problem_dir(self, root_path, problem_num):
+        """
+        Creat Dir in my style
+        root/volume{:0>3}/ProblemTitle
+        """
+        import os
+        problem_int = int(problem_num)
+        dir_path = os.path.join(root_path, 'volume{:0>3}'.format(problem_int//100))
+        if not os.path.exists(dir_path):
+            os.makedirs(dir_path)
+
+        problem_title = self.get_title(problem_num)
+        error_char = ['<', '>', ':', '\"', '/', '\\', '|', '?', '*']
+        for ecr in error_char:
+            problem_title = problem_title.replace(ecr, ' ')
+        problem_path = os.path.join(dir_path, problem_title)
+        if not os.path.exists(problem_path):
+            os.makedirs(problem_path)
