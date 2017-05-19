@@ -12,16 +12,27 @@ class UvaProblems:
     Uva Problem Data Bridge
     """
     def __init__(self, fileName='uvaDic.json'):
-        data = None
+        self.id2num_dic = {}
+
         try:
-            import pkgutil
-            from json import loads
-            data = pkgutil.get_data(__package__, fileName)
-            print(type(data.decode('utf-8')))
-            self.dic = loads(data.decode('utf-8'))
-        except FileNotFoundError:
-            self.dic = self.get_problem_name_dic_from_uhunt()
+            from .lib import GeneralMethod
+            self.dic = GeneralMethod.load_json_data(__package__, fileName)
+        except (FileNotFoundError, AttributeError):
+            from .lib import uhunt_api
+            self.dic = uhunt_api.get_problem_name_dic_from_uhunt()
             self.save_dic(fileName)
+        finally:
+            self.create_id2num_dic()
+
+    def create_id2num_dic(self):
+        """
+        Creat ProblemId mapping ProblemNumber dictionary
+        """
+        self.id2num_dic = {}
+
+        for key, problem in self.dic.items():
+            self.id2num_dic[problem["pid"]] = key
+
 
     def save_dic(self, file_name='uvaDic.json'):
         """
@@ -34,33 +45,42 @@ class UvaProblems:
         Returns:
             None
         """
-
+        from .lib import GeneralMethod
         from os.path import abspath, join, dirname
-        from json import dump
-
         file_path = join(abspath(dirname(__file__)), file_name)
-        print(file_path)
-        with open(file_path, 'w') as json_file:
-            dump(self.dic, json_file)
+        GeneralMethod.save_json_data(self.dic, file_path)
 
-    @staticmethod
-    def get_problem_name_dic_from_uhunt():
+    def problem_id_to_num(self, problem_id):
         """
-        get problem dictionary from uhunt
+        problem Number to problem title
+
+        Args:
+            self: self
+            problem_id: problem Id
 
         Returns:
-            problem dictionary
+            String:problem Number if exist
+                else return "-1"
+        """
+        if problem_id in self.id2num_dic:
+            return self.id2num_dic[problem_id]
+        else:
+            return "-1"
+
+    def get_title(self, problem_num):
+        """
+        problem Number to problem title
+
+        Args:
+            self: self
+            problem_num: problem Number
+
+        Returns:
+            String:problem title if exist
+                else return ""
         """
 
-        import requests
-
-        result = {}
-        req = requests.get(url='http://uhunt.felix-halim.net/api/p').json()
-
-        for problem in req:
-            result[problem[1]] = {
-                'pid':problem[0],
-                'pNumber':problem[1],
-                'pTitle':problem[2]
-            }
-        return result
+        if problem_num in self.dic:
+            return self.dic[problem_num]["pTitle"]
+        else:
+            return ""
