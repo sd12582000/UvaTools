@@ -101,6 +101,7 @@ class UvaProblems:
         error_char = ['<', '>', ':', '\"', '/', '\\', '|', '?', '*']
         for ecr in error_char:
             problem_title = problem_title.replace(ecr, ' ')
+        problem_title = '{}-{}'.format(problem_num, problem_title)
         problem_path = os.path.join(dir_path, problem_title)
         if not os.path.exists(problem_path):
             os.makedirs(problem_path)
